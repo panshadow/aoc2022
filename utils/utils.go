@@ -28,7 +28,16 @@ func RegisterTask(taskID string, code TaskSolutionFn, input string) {
 }
 
 func SplitText(text string) []string {
-	return strings.Split(text, "\n")
+	rows := strings.Split(text, "\n")
+	from := 0
+	to := len(rows)
+	if strings.HasPrefix(rows[0], "#")  {
+		from = 1
+	}
+	if rows[to-1] == "" {
+		to--
+	}
+	return rows[from:to]
 }
 
 func LoadInput(fname string) ([]string, error) {
