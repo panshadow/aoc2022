@@ -13,8 +13,8 @@ const (
 )
 
 func init() {
-	utils.TaskRegistry["01/01"] = utils.TaskSolution{Code: Task01}
-	utils.TaskRegistry["01/02"] = utils.TaskSolution{Code: Task02, InputAlias: "01/01"}
+	utils.RegisterTask("01/01", Task01, "01/01.twitter")
+	utils.RegisterTask("01/02", Task02, "01/01.twitter")
 }
 
 func calcCallories(input []string) []int {
