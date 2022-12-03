@@ -25,10 +25,7 @@ func main() {
 		if !found {
 			log.Fatalf("Task %s not found\n", taskID)
 		}
-		if task.InputAlias != "" {
-			taskID = task.InputAlias
-		}
-		inputFile := fmt.Sprintf("%s%s", DATA_DIR, taskID)
+		inputFile := fmt.Sprintf("%s%s", DATA_DIR, task.Input)
 		input, err := utils.LoadInput(inputFile)
 		if err != nil {
 			log.Fatal(err)
