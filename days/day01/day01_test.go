@@ -3,7 +3,7 @@ package day01
 import (
 	"testing"
 
-	"github.com/panshdw/aoc2022/utils"
+	"github.com/panshadow/aoc2022/utils"
 )
 
 var (

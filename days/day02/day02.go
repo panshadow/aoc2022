@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/panshdw/aoc2022/utils"
+	"github.com/panshadow/aoc2022/utils"
 )
 
 func init() {

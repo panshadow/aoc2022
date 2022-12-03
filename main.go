@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log"
 
-	_ "github.com/panshdw/aoc2022/days/day01"
-	_ "github.com/panshdw/aoc2022/days/day02"
-	_ "github.com/panshdw/aoc2022/days/day03"
-	"github.com/panshdw/aoc2022/utils"
+	_ "github.com/panshadow/aoc2022/days/day01"
+	_ "github.com/panshadow/aoc2022/days/day02"
+	_ "github.com/panshadow/aoc2022/days/day03"
+	"github.com/panshadow/aoc2022/utils"
 )
 const (
 	DATA_DIR = "./data/"
