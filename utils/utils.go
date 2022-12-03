@@ -10,12 +10,22 @@ type TaskSolutionFn func([]string) string
 
 type TaskSolution struct {
 	Code       TaskSolutionFn
-	InputAlias string
+	Input string
 }
 
 var (
 	TaskRegistry = map[string]TaskSolution{}
 )
+
+func RegisterTask(taskID string, code TaskSolutionFn, input string) {
+	if input == "" {
+		input = taskID
+	}
+	TaskRegistry[taskID] = TaskSolution{
+		Code: code,
+		Input: input,
+	}
+}
 
 func SplitText(text string) []string {
 	return strings.Split(text, "\n")
