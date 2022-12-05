@@ -25,5 +25,5 @@ func TestTask01(t *testing.T) {
 }
 
 func TestTask02(t *testing.T) {
-	Is(t, Task02(input), "")
+	Is(t, Task02(input), "MCD")
 }

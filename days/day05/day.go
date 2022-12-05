@@ -11,7 +11,7 @@ import (
 
 func init() {
 	RegisterTask("05/01", Task01, "05/01.twitter")
-	RegisterTask("05/01", Task02, "05/01.twitter")
+	RegisterTask("05/02", Task02, "05/01.twitter")
 }
 
 type Stack struct {
@@ -41,6 +41,25 @@ func (s *Stack) Pop() string {
 	return val
 }
 
+func (s *Stack) PushN(vals []string) {
+	for _,val := range vals {
+		s.Push(val)
+	}
+}
+
+func (s *Stack) PopN(n int) []string {
+	fr := s.Cur-n+1
+	to := s.Cur+1
+	val := s.Buf[fr:to]
+	s.Cur -= n
+ 	return val
+}
+
+
+
+func (s *Stack) String() string {
+	return strings.Join(s.Buf[:s.Cur+1], ", ")
+}
 
 func parseStackRow(ss []*Stack, row string) {
 	for i,s := range ss {
@@ -48,7 +67,7 @@ func parseStackRow(ss []*Stack, row string) {
 		to := from+1
 		if to <= len(row) {
 			val := row[from:to]
-			if val != "" {
+			if val != " " {
 				s.Push(val)
 			}
 		}
@@ -86,6 +105,10 @@ func Task01(input []string) string {
 	for i := empty-2; i>=0; i-- {
 		parseStackRow(stacks, input[i])
 	}
+	for i,s := range stacks {
+		fmt.Println(labels[i],s.String())
+	}
+
 	for i := empty+1; i<len(input); i++ {
 		cmd := parseCommandRow(input[i])
 		for j := 0; j<cmd.Num; j++ {
@@ -101,5 +124,30 @@ func Task01(input []string) string {
 }
 
 func Task02(input []string) string {
-	return ""
+	var empty int
+	for empty=0;input[empty] != ""; empty++ {
+	}
+	labels := strings.Fields(input[empty-1])
+	stacks := make([]*Stack,len(labels))
+	stackSize := len(labels)*(empty-1)
+	for i := range labels {
+		stacks[i] = NewStack(stackSize)
+	}
+	for i := empty-2; i>=0; i-- {
+		parseStackRow(stacks, input[i])
+	}
+	for i,s := range stacks {
+		fmt.Println(labels[i],s.String())
+	}
+
+	for i := empty+1; i<len(input); i++ {
+		cmd := parseCommandRow(input[i])
+		vals := stacks[cmd.Src].PopN(cmd.Num)
+		fmt.Printf("Move [%s]: %s -> %s\n",vals,labels[cmd.Src], labels[cmd.Dst])
+		stacks[cmd.Dst].PushN(vals)
+	}
+	for i := range labels {
+		labels[i] = stacks[i].Pop()
+	}
+	return strings.Join(labels, "")
 }
