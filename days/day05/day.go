@@ -15,6 +15,7 @@ func init() {
 }
 
 type Stack struct {
+	Label string
 	Buf []string
 	Cur int
 }
@@ -25,9 +26,9 @@ type Command struct {
 	Dst int
 }
 
-func NewStack(size int) *Stack {
+func NewStack(label string, size int) *Stack {
 	buf := make([]string, size)
-	return &Stack{buf, -1}
+	return &Stack{label, buf, -1}
 }
 
 func (s *Stack) Push(val string) {
@@ -58,7 +59,7 @@ func (s *Stack) PopN(n int) []string {
 
 
 func (s *Stack) String() string {
-	return strings.Join(s.Buf[:s.Cur+1], ", ")
+	return fmt.Sprintf("%s: [%s]", s.Label, strings.Join(s.Buf[:s.Cur+1], ", "))
 }
 
 func parseStackRow(ss []*Stack, row string) {
@@ -92,7 +93,7 @@ func parseCommandRow(row string) *Command {
 	return &Command{num, src-1, dst-1}
 }
 
-func Task01(input []string) string {
+func Solution(input []string, handler func([]*Stack, *Command)) string {
 	var empty int
 	for empty=0;input[empty] != ""; empty++ {
 	}
@@ -100,54 +101,40 @@ func Task01(input []string) string {
 	stacks := make([]*Stack,len(labels))
 	stackSize := len(labels)*(empty-1)
 	for i := range labels {
-		stacks[i] = NewStack(stackSize)
+		stacks[i] = NewStack(labels[i], stackSize)
 	}
 	for i := empty-2; i>=0; i-- {
 		parseStackRow(stacks, input[i])
 	}
-	for i,s := range stacks {
-		fmt.Println(labels[i],s.String())
+	for _,s := range stacks {
+		fmt.Println(s)
 	}
 
 	for i := empty+1; i<len(input); i++ {
 		cmd := parseCommandRow(input[i])
-		for j := 0; j<cmd.Num; j++ {
-			val := stacks[cmd.Src].Pop()
-			fmt.Printf("Move [%s]: %s -> %s\n",val,labels[cmd.Src], labels[cmd.Dst])
-			stacks[cmd.Dst].Push(val)
-		}
+		handler(stacks, cmd)
 	}
 	for i := range labels {
 		labels[i] = stacks[i].Pop()
 	}
 	return strings.Join(labels, "")
+
+}
+
+func Task01(input []string) string {
+	return Solution(input, func(stacks []*Stack, cmd *Command) {
+		for j := 0; j<cmd.Num; j++ {
+			val := stacks[cmd.Src].Pop()
+			fmt.Printf("Move [%s]: %s -> %s\n",val, stacks[cmd.Src].Label, stacks[cmd.Dst].Label)
+			stacks[cmd.Dst].Push(val)
+		}
+	})
 }
 
 func Task02(input []string) string {
-	var empty int
-	for empty=0;input[empty] != ""; empty++ {
-	}
-	labels := strings.Fields(input[empty-1])
-	stacks := make([]*Stack,len(labels))
-	stackSize := len(labels)*(empty-1)
-	for i := range labels {
-		stacks[i] = NewStack(stackSize)
-	}
-	for i := empty-2; i>=0; i-- {
-		parseStackRow(stacks, input[i])
-	}
-	for i,s := range stacks {
-		fmt.Println(labels[i],s.String())
-	}
-
-	for i := empty+1; i<len(input); i++ {
-		cmd := parseCommandRow(input[i])
+	return Solution(input, func(stacks []*Stack, cmd *Command) {
 		vals := stacks[cmd.Src].PopN(cmd.Num)
-		fmt.Printf("Move [%s]: %s -> %s\n",vals,labels[cmd.Src], labels[cmd.Dst])
+		fmt.Printf("Move [%s]: %s -> %s\n", vals, stacks[cmd.Src].Label, stacks[cmd.Dst].Label)
 		stacks[cmd.Dst].PushN(vals)
-	}
-	for i := range labels {
-		labels[i] = stacks[i].Pop()
-	}
-	return strings.Join(labels, "")
+	})
 }
