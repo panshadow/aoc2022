@@ -4,29 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strings"
-	"testing"
 )
 
-type TaskSolutionFn func([]string) string
-
-type TaskSolution struct {
-	Code       TaskSolutionFn
-	Input string
-}
-
-var (
-	TaskRegistry = map[string]TaskSolution{}
-)
-
-func RegisterTask(taskID string, code TaskSolutionFn, input string) {
-	if input == "" {
-		input = taskID
-	}
-	TaskRegistry[taskID] = TaskSolution{
-		Code: code,
-		Input: input,
-	}
-}
 
 func SplitText(text string) []string {
 	rows := strings.Split(text, "\n")
@@ -70,18 +49,4 @@ func EqSlice[T comparable](a []T, b []T) bool {
 	}
 
 	return true
-}
-
-func RunTest(input []string, task TaskSolutionFn, expected string) string {
-	result := task(input)
-	if result != expected {
-		return fmt.Sprintf("Actual: %s\nExpected: %s\n", result, expected)
-	}
-	return ""
-}
-
-func Is[T comparable](t *testing.T, actual T, expected T) {
-	if actual != expected {
-		t.Errorf("FAIL\nActual: %v\nExpected: %v\n", actual, expected)
-	}
 }
