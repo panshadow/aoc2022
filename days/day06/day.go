@@ -11,26 +11,33 @@ func init() {
 	RegisterTask("06/02", Task02, "06/01.twitter")
 }
 
+func isMarker(marker string) bool {
+	for i:=0;i<len(marker)-1;i++ {
+		for j:=i+1;j<len(marker);j++ {
+			if marker[i]==marker[j] {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func detectMarker(size int, input string) int {
 	fmt.Println("DS: ",input)
-	chMap := make(map[byte]int)
-	cur := 0
-	for ; cur < size; cur ++ {
-		chMap[input[cur]]++
-	}
-	fmt.Printf("After %d marker: %s\n", cur+1, input[cur-size+1:cur+1])
-	if len(input[cur-size+1:cur+1])==len(chMap) {
-		fmt.Println("Found in ", cur+1)
+	cur := size
+	fmt.Printf("After %d marker: %s\n", cur, input[cur-size:cur])
+	if isMarker(input[cur-size:cur]) {
+		fmt.Println("Found in ", cur)
 		return cur
 	}
 	for cur < len(input) {
-		delete(chMap, input[cur-size])
-		cur++
+		oldCh := input[cur-size]
 		nextCh := input[cur]
-		chMap[nextCh]++
-		fmt.Printf("After %d and %c marker: %s\n", cur+1, nextCh, input[cur-size+1:cur+1])
-		if len(chMap) == size {
-			fmt.Println("Found in ", cur+1)
+		cur++
+		marker := input[cur-size:cur]
+		fmt.Printf("%d %c <- [%s:%c]\n", cur, oldCh, marker[:size-1], nextCh)
+		if isMarker(marker) {
+			fmt.Println("Found in ", cur)
 			return cur
 		}
 	}
@@ -42,5 +49,5 @@ func Task01(input []string) string {
 }
 
 func Task02(input []string) string {
-	return ""
+	return fmt.Sprint(detectMarker(14, input[0]))
 }
