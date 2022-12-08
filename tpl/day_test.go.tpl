@@ -1,4 +1,4 @@
-package day06
+package dayDY
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ import (
 
 var (
 
-	input = SplitText(`# day06
+	input = SplitText(`# dayDY
 `)
 	expected01 = ""
 	expected02 = ""

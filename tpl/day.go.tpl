@@ -1,12 +1,12 @@
-package day06
+package dayDY
 
 import (
 	. "github.com/panshadow/aoc2022/utils"
 )
 
 func init() {
-	RegisterTask("06/01", Task01, "06/01.twitter")
-	RegisterTask("06/02", Task02, "06/01.twitter")
+	RegisterTask("DY/01", Task01, "DY/01.twitter")
+	RegisterTask("DY/02", Task02, "DY/01.twitter")
 }
 
 
