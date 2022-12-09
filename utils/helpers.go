@@ -3,8 +3,14 @@ package utils
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
+
 	"golang.org/x/exp/constraints"
+)
+
+var (
+	DEBUG_MODE = os.Getenv("DBG") != ""
 )
 
 
@@ -89,4 +95,22 @@ func Min[T constraints.Integer](x T, xs ...T) T {
 		}
 	}
 	return min
+}
+
+func Debug(args ...interface{}) {
+	if DEBUG_MODE {
+		fmt.Print(args...)
+	}
+}
+
+func Debugf(format string, args ...interface{}) {
+	if DEBUG_MODE {
+		fmt.Printf(format, args...)
+	}
+}
+
+func Debugln(args ...interface{}) {
+	if DEBUG_MODE {
+		fmt.Println(args...)
+	}
 }
