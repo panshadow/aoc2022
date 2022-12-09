@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"sort"
 
 	_ "github.com/panshadow/aoc2022/days/day01"
 	_ "github.com/panshadow/aoc2022/days/day02"
@@ -47,5 +48,14 @@ func main() {
 			log.Fatal(err)
 		}
 		fmt.Println("Result: ", task.Code(input))
+	} else {
+		allTasks := []string{}
+		for taskID := range utils.TaskRegistry {
+			allTasks = append(allTasks, taskID)
+		}
+		sort.Strings(allTasks)
+		for _,taskID := range allTasks {
+			fmt.Println(" - ",taskID)
+		}
 	}
 }
