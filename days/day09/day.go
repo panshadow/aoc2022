@@ -56,20 +56,50 @@ func (k *KnotPos) Distance(k2 *KnotPos) int {
 }
 
 func (k *KnotPos) Move(dr,dc int) {
-	fmt.Print(k)
+	Debug(k)
 	k.R += dr
 	k.C += dc
-	fmt.Println(" -> ", k)
+	Debugln(" -> ", k)
 }
 
 func (k *KnotPos) PullTower(k2 *KnotPos) {
-	fmt.Printf("Pull %s Tower %s:\n", k, k2)
+	Debugf("Pull %s Tower %s:\n", k, k2)
 	for k.Distance(k2)>1 {
 		dr := Ord(k2.R,k.R)
 		dc := Ord(k2.C,k.C)
 		k.Move(dr,dc)
 	}
-	fmt.Println("-")
+	Debugln("-")
+}
+
+func ShowPath(Path *map[KnotPos]bool) {
+	num := len(*Path)
+
+	Rs := make([]int, 0, num)
+	Cs := make([]int, 0, num)
+	for k := range *Path {
+		Rs = append(Rs, k.R)
+		Cs = append(Cs, k.C)
+	}
+	Rmin := Min(Rs[0],Rs[1:]...)-1
+	Rmax := Max(Rs[0],Rs[1:]...)+1
+	Cmin := Min(Cs[0],Cs[1:]...)-1
+	Cmax := Max(Cs[0],Cs[1:]...)+1
+	rows := make([][]rune, Rmax-Rmin+1)
+	for i := range rows {
+		rows[i] = make([]rune, Cmax-Cmin+1)
+		for j := range rows[i] {
+			rows[i][j] = '.'
+		}
+	}
+
+	for i:=0; i< num; i++ {
+		rows[Rs[i]-Rmin][Cs[i]-Cmin] = '#'
+	}
+
+	for _,row := range rows {
+		fmt.Println(string(row))
+	}
 }
 
 
@@ -91,6 +121,8 @@ func Task01(input []string) string {
 			Path[*T] = true
 		}
 	}
+
+	ShowPath(&Path)
 
 	return fmt.Sprint(len(Path))
 }
@@ -118,6 +150,9 @@ func Task02(input []string) string {
 			Path[*Rope[N-1]] = true
 		}
 	}
+	num := len(Path)
 
-	return fmt.Sprint(len(Path))
+	ShowPath(&Path)
+
+	return fmt.Sprint(num)
 }
