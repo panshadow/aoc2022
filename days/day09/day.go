@@ -34,6 +34,10 @@ type KnotPos struct {
 	C int
 }
 
+func (k *KnotPos) String() string {
+	return fmt.Sprintf("%s {%-02d:%-02d}", k.S, k.R, k.C)
+}
+
 func NewKnot(s string, r,c int) *KnotPos {
 	k := new(KnotPos)
 	k.S = s
@@ -46,22 +50,20 @@ func (k *KnotPos) Distance(k2 *KnotPos) int {
 	dr := Abs(k2.R - k.R)
 	dc := Abs(k2.C - k.C)
 	if dr > dc {
-		fmt.Printf("?? {%d:%d} <-[%-2d]-> {%d:%d}\n", k.R,k.C,dr,k2.R,k2.C)
 		return dr
-	} else {
-		fmt.Printf("?? {%d:%d} <-[%-2d]-> {%d:%d}\n", k.R,k.C,dc,k2.R,k2.C)
-		return dc
 	}
+	return dc
 }
 
 func (k *KnotPos) Move(dr,dc int) {
-	fmt.Printf("%s {%d:%d} -> {%d,%d}\n", k.S,k.R,k.C,k.R+dr,k.C+dc)
+	fmt.Print(k)
 	k.R += dr
 	k.C += dc
+	fmt.Println(" -> ", k)
 }
 
 func (k *KnotPos) PullTower(k2 *KnotPos) {
-	fmt.Printf("Pull %s Tower %s:\n", k.S, k2.S)
+	fmt.Printf("Pull %s Tower %s:\n", k, k2)
 	for k.Distance(k2)>1 {
 		dr := Ord(k2.R,k.R)
 		dc := Ord(k2.C,k.C)
@@ -97,7 +99,7 @@ func Task02(input []string) string {
 	N := 10
 	Rope := make([]*KnotPos,N)
 	for i := range Rope {
-		Rope[i] = NewKnot(fmt.Sprint(i), 0, 0)
+		Rope[i] = NewKnot(fmt.Sprintf("K%d",i), 0, 0)
 	}
 	Path := make(map[KnotPos]bool)
 	for i,line := range input {
