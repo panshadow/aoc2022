@@ -50,3 +50,21 @@ func EqSlice[T comparable](a []T, b []T) bool {
 
 	return true
 }
+
+func Ord(x,y int) int {
+	switch {
+	case x>y:
+		return 1
+	case x<y:
+		return -1
+	default:
+		return 0
+	}
+}
+
+func Abs(x int) int {
+	if x<0 {
+		return -x
+	}
+	return x
+}
