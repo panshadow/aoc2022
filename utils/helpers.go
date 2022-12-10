@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -29,7 +31,16 @@ func SplitText(text string) []string {
 
 func LoadInput(fname string) ([]string, error) {
 	var out []string
-	body, err := ioutil.ReadFile(fname)
+	var body []byte
+	var err error
+	if fname == "-" {
+		Debugln("Load input from STDIO")
+		stdIn := bufio.NewReader(os.Stdin)
+		body, err = io.ReadAll(stdIn)
+	} else {
+		Debugln("Load input from file ", fname)
+		body, err = ioutil.ReadFile(fname)
+	}
 
 	if err != nil {
 		return out, fmt.Errorf("Can't open file: %s: %v", fname, err)

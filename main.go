@@ -22,9 +22,13 @@ const (
 )
 
 func main() {
+	var inputFile string
+	flag.StringVar(&inputFile, "i", "", "custom input file")
 	flag.Parse()
+
 	fmt.Println("Advent Of Code 2022!")
 	fmt.Printf("Found %d solutions\n", len(utils.TaskRegistry))
+	utils.Debugln("INPUT FILE:",inputFile)
 
 	if flag.NArg() > 0 {
 		taskID := flag.Arg(0)
@@ -32,7 +36,10 @@ func main() {
 		if !found {
 			log.Fatalf("Task %s not found\n", taskID)
 		}
-		inputFile := fmt.Sprintf("%s%s", DATA_DIR, task.Input)
+
+		if inputFile == "" {
+			inputFile = fmt.Sprintf("%s%s", DATA_DIR, task.Input)
+		}
 		input, err := utils.LoadInput(inputFile)
 		if err != nil {
 			log.Fatal(err)
