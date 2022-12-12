@@ -1,0 +1,5 @@
+addx 12
+addx 2
+noop
+addx -10
+addx 4

@@ -52,12 +52,7 @@ func (c *CPU) SignalStrength(cycle int) int {
 }
 
 func (c *CPU) Cycle() {
-	Debugf("(%04d) ::",c.CurCycle)
-	if _, watch := c.Watchers[c.CurCycle]; watch {
-		signalStrength := c.CurCycle * c.RegX
-		c.Watchers[c.CurCycle] = signalStrength
-		Debug("W", signalStrength)
-	}
+	Debugf("\t%04d: ",c.CurCycle)
 
 	spriteMid := c.RegX % CRT_W
 	crtPos := c.CurCycle-1
@@ -66,6 +61,32 @@ func (c *CPU) Cycle() {
 	} else {
 		c.CRT[crtPos] = '.'
 	}
+
+	dbgCRT := make([]rune,CRT_W)
+	dbgCRTStart := crtPos/CRT_W*CRT_W
+	for i:=0;i<CRT_W;i++ {
+		switch {
+		case i<spriteMid-1:
+			dbgCRT[i] = c.CRT[i+dbgCRTStart]
+		case i==crtPos%CRT_W && c.CRT[crtPos] == '#':
+			dbgCRT[i] = '+'
+		case i==crtPos%CRT_W && c.CRT[crtPos] == '.':
+			dbgCRT[i] = '-'
+		case i>=spriteMid-1 && i<=spriteMid+1:
+			dbgCRT[i] = '@'
+		default:
+			dbgCRT[i] = '.'
+		}
+	}
+
+	Debugf("[%s] X:[%04d] CP:[%d] DBGCS:[%d] DBGCL:[%d]", string(dbgCRT), c.RegX, crtPos, dbgCRTStart, len(dbgCRT))
+
+	if _, watch := c.Watchers[c.CurCycle]; watch {
+		signalStrength := c.CurCycle * c.RegX
+		c.Watchers[c.CurCycle] = signalStrength
+		Debugf(" W:[%04d]", signalStrength)
+	}
+
 	c.CurCycle++
 	Debugln("::")
 }
@@ -82,7 +103,7 @@ func (c *CPU) handleNoop() {
 
 func parseLine(cpu *CPU, line string) {
 	fields := strings.Fields(line)
-	cur := cpu.CurCycle
+	Debugf("[%04d]: %10s X:[%-4d]\n",cpu.CurCycle, line, cpu.RegX)
 	switch fields[0] {
 	case "noop":
 		cpu.handleNoop()
@@ -98,7 +119,6 @@ func parseLine(cpu *CPU, line string) {
 
 		cpu.handleAddX(val)
 	}
-	Debugf("[%04d]: %10s X:[%-4d]\n",cur, line, cpu.RegX)
 }
 
 func (c *CPU) ShowCRT() string {
