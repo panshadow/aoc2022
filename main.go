@@ -16,6 +16,7 @@ import (
 	_ "github.com/panshadow/aoc2022/days/day09"
 	_ "github.com/panshadow/aoc2022/days/day10"
 	_ "github.com/panshadow/aoc2022/days/day11"
+	_ "github.com/panshadow/aoc2022/days/day12"
 	"github.com/panshadow/aoc2022/utils"
 )
 const (
