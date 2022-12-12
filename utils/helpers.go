@@ -125,3 +125,17 @@ func Debugln(args ...interface{}) {
 		fmt.Println(args...)
 	}
 }
+
+func TopN(xs []int, n int) []int {
+	max := make([]int, n)
+	for _, x := range xs {
+		placed := false
+		for i := range max {
+			if !placed && x > max[i] {
+				placed = true
+				InsertIntoSlice(max, i, x)
+			}
+		}
+	}
+	return max
+}
