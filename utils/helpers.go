@@ -139,3 +139,11 @@ func TopN(xs []int, n int) []int {
 	}
 	return max
 }
+
+func JoinListString[T any](xs []T, delim string) string {
+	out := make([]string, len(xs))
+	for i,x := range xs {
+		out[i] = fmt.Sprint(x)
+	}
+	return strings.Join(out, delim)
+}
