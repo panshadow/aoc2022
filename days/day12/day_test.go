@@ -9,9 +9,13 @@ import (
 var (
 
 	input = SplitText(`# day12
-`)
-	expected01 = ""
-	expected02 = ""
+Sabqponm
+abcryxxl
+accszExk
+acctuvwj
+abdefghi`)
+	expected01 = "31"
+	expected02 = "29"
 )
 
 func TestTask01(t *testing.T) {
