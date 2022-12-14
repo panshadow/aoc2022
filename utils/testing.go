@@ -13,8 +13,12 @@ func RunTest(input []string, task TaskSolutionFn, expected string) string {
 	return ""
 }
 
-func Is[T comparable](t *testing.T, actual T, expected T) {
+func IsNamed[T comparable](t *testing.T, title string, actual T, expected T) {
 	if actual != expected {
-		t.Errorf("FAIL\nActual: %v\nExpected: %v\n", actual, expected)
+		t.Errorf("FAIL %s\nActual: %v\nExpected: %v\n", title, actual, expected)
 	}
+}
+
+func Is[T comparable](t *testing.T, actual, expected T) {
+	IsNamed(t, "", actual, expected)
 }
