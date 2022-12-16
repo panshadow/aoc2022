@@ -12,7 +12,7 @@ var (
 498,4 -> 498,6 -> 496,6
 503,4 -> 502,4 -> 502,9 -> 494,9`)
 	expected01 = "24"
-	expected02 = ""
+	expected02 = "93"
 )
 
 func TestTask01(t *testing.T) {
