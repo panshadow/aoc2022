@@ -24,7 +24,7 @@ Sensor at x=16, y=7: closest beacon is at x=15, y=3
 Sensor at x=14, y=3: closest beacon is at x=15, y=3
 Sensor at x=20, y=1: closest beacon is at x=15, y=3`)
 	expected01 = 26
-	expected02 = ""
+	expected02 = 56000011
 )
 
 func TestTask01(t *testing.T) {
@@ -32,5 +32,8 @@ func TestTask01(t *testing.T) {
 }
 
 func TestTask02(t *testing.T) {
-	Is(t, Task02(input), expected02)
+	res20 := Solution2(input, 20)
+	x := res20 / 20 * 4000000
+	y := res20 % 20
+	Is(t, x+y, expected02)
 }
