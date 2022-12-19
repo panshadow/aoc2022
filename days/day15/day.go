@@ -105,30 +105,74 @@ func AppendRange(ranges [][2]int, crange [2]int) [][2]int {
 	for i:=0; i<len(ranges); i++ {
 		switch {
 		case crange[1] < ranges[i][0]:
+			Debugf("Insert range [%d:%d] before #%d [%d:%d]\n",crange[0],crange[1],i,ranges[i][0], ranges[i][1])
 			out = append(out,crange)
 			for j:=i;j<len(ranges);j++ {
 				out = append(out, ranges[j])
 			}
+			for _,r := range out {
+				Debugf("[%d:%d] - ",r[0],r[1])
+			}
+			Debugln("*")
 			return out
-		case crange[0] <= ranges[i][0] && crange[1] >= ranges[i][0]:
+		case crange[0] <= ranges[i][0] && crange[1] >= ranges[i][1]:
+			Debugf("Merge range [%d:%d] with #%d [%d:%d] outter\n",crange[0],crange[1],i,ranges[i][0], ranges[i][1])
+			out = append(out, crange)
+			for j:=i+1;j<len(ranges);j++ {
+				out = AppendRange(out, ranges[j])
+			}
+			for _,r := range out {
+				Debugf("[%d:%d] - ",r[0],r[1])
+			}
+			Debugln("*")
+			return out
+		case crange[0] >= ranges[i][0] && crange[1] <= ranges[i][1]:
+			Debugf("Merge range [%d:%d] with #%d [%d:%d] inner\n",crange[0],crange[1],i,ranges[i][0], ranges[i][1])
+			out = append(out, ranges[i])
+			for j:=i+1;j<len(ranges);j++ {
+				out = AppendRange(out, ranges[j])
+			}
+			for _,r := range out {
+				Debugf("[%d:%d] - ",r[0],r[1])
+			}
+			Debugln("*")
+			return out
+		case crange[0] < ranges[i][0] && crange[1] >= ranges[i][0]-1 && crange[1] <= ranges[i][1]:
+			Debugf("Merge range [%d:%d] with #%d [%d:%d] left\n",crange[0],crange[1],i,ranges[i][0], ranges[i][1])
 			crange[1] = ranges[i][1]
 			out = append(out, crange)
 			for j:=i+1;j<len(ranges);j++ {
-				out = append(out, ranges[j])
+				out = AppendRange(out, ranges[j])
 			}
+			for _,r := range out {
+				Debugf("[%d:%d] - ",r[0],r[1])
+			}
+			Debugln("*")
 			return out
-		case crange[0] <= ranges[i][1] && crange[1] >= ranges[i][1]:
+		case ranges[i][0] < crange[0] && ranges[i][1] >= crange[0]-1 && ranges[i][1] <= crange[1]:
+			Debugf("Merge range [%d:%d] with #%d [%d:%d] right\n",crange[0],crange[1],i,ranges[i][0], ranges[i][1])
 			crange[0] = ranges[i][0]
 			out = append(out, crange)
 			for j:=i+1;j<len(ranges);j++ {
-				out = append(out, ranges[j])
+				out = AppendRange(out, ranges[j])
 			}
+			for _,r := range out {
+				Debugf("[%d:%d] - ",r[0],r[1])
+			}
+			Debugln("*")
 			return out
 		default:
+			Debugf("Save range #%d [%d:%d]\n", i, ranges[i][0],ranges[i][1])
 			out = append(out, ranges[i])
 		}
 	}
+	Debugf("Append range [%d:%d]\n", crange[0], crange[1])
+
 	out = append(out, crange)
+	for _,r := range out {
+		Debugf("[%d:%d] - ",r[0],r[1])
+	}
+	Debugln("*")
 	return out
 }
 
@@ -147,12 +191,15 @@ func Solution2(input []string, size int) int {
 		beacon := parseSensor(line)
 		beacons[i] = beacon
 		for y := 0; y<=size; y++ {
+			Debugf("Y=%d, line=%d\n",y,i)
 			if beacon.IsCover(y) {
 				crange := beacon.CoverRange(y, false)
+				Debugf("range: %d:%d\n",crange[0], crange[1])
 				if crange[1] >= 0  || crange[0] <= size {
 					crange[0] = Max(crange[0],0)
 					crange[1] = Min(crange[1],size)
-					ranges[y] = append(ranges[y], crange)
+					Debugf("corrected range: %d:%d\n",crange[0], crange[1])
+					ranges[y] = AppendRange(ranges[y], crange)
 				}
 			}
 		}
@@ -162,16 +209,34 @@ func Solution2(input []string, size int) int {
 
 
 	for y:=0;y<=size;y++ {
-		// for i:=0; !found && i<len(ranges[y]); i++ {
-		// 	if x >= ranges[y][i][0] && x <= ranges[y][i][1] {
-		// 		found = true
-		// 	}
-		// }
-		// if !found {
-		// 	return x*size + y
-		// }
-		if len(ranges[y]) >= len(input) {
-			return -2
+		Debugf("y=%d ",y)
+		for _,r := range ranges[y] {
+			Debugf("[%d:%d] - ",r[0],r[1])
+		}
+		Debugln("*")
+		var x int
+		if len(ranges[y]) > 1 {
+			for _,r := range ranges[y] {
+				Debugf("[%d:%d] - ",r[0],r[1])
+			}
+			Debugln("*")
+			for j := 0; j < len(ranges[y])-1; j++ {
+				if ranges[y][j][1]+1 < ranges[y][j+1][0] {
+					x = ranges[y][j][1]+1
+					Debugln("Found x=",x," y=",y)
+					fmt.Printf("%+v, y=%d, len(ranges[%d])=%d\n",ranges[y],y,y,len(ranges[y]))
+					return x*size+y
+				}
+			}
+		} else if len(ranges[y])==1 && len(ranges[y][0]) < size {
+			Debugln("This one")
+			if ranges[y][0][0] > 0 {
+				x = ranges[y][0][0]
+			} else if ranges[y][0][1] < size {
+				x = ranges[y][0][1]
+			}
+			Debugln("Found x=",x," y=",y)
+			return x*size+y
 		}
 	}
 	return -1
