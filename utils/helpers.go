@@ -147,3 +147,9 @@ func JoinListString[T any](xs []T, delim string) string {
 	}
 	return strings.Join(out, delim)
 }
+
+func Tokens(s string, delim string) []string {
+	return strings.FieldsFunc(s, func(r rune) bool {
+		return strings.IndexRune(delim, r) != -1
+	})
+}
