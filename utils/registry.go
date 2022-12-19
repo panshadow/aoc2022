@@ -3,7 +3,7 @@ package utils
 type TaskSolutionFn func([]string) string
 
 type TaskSolution struct {
-	Code       TaskSolutionFn
+	Code  TaskSolutionFn
 	Input string
 }
 
@@ -16,7 +16,7 @@ func RegisterTask(taskID string, code TaskSolutionFn, input string) {
 		input = taskID
 	}
 	TaskRegistry[taskID] = TaskSolution{
-		Code: code,
+		Code:  code,
 		Input: input,
 	}
 }

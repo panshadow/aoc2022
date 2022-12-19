@@ -35,7 +35,6 @@ func main() {
 	flag.Parse()
 
 	fmt.Println("Advent Of Code 2022!")
-	fmt.Printf("Found %d solutions\n", len(utils.TaskRegistry))
 	utils.Debugln("INPUT FILE:",inputFile)
 
 	if flag.NArg() > 0 {
@@ -54,6 +53,7 @@ func main() {
 		}
 		fmt.Println("Result: ", task.Code(input))
 	} else {
+		fmt.Printf("Found %d solutions\n", len(utils.TaskRegistry))
 		allTasks := []string{}
 		for taskID := range utils.TaskRegistry {
 			allTasks = append(allTasks, taskID)
