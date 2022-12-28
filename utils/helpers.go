@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	"golang.org/x/exp/constraints"
@@ -152,4 +154,16 @@ func Tokens(s string, delim string) []string {
 	return strings.FieldsFunc(s, func(r rune) bool {
 		return strings.IndexRune(delim, r) != -1
 	})
+}
+
+func IntSlice(fields []string) []int {
+	out := make([]int, len(fields))
+	for i,f := range fields {
+		v, err := strconv.Atoi(f)
+		if err != nil {
+			log.Fatalf("Invalid field %d: %s in fields: %s:  %v",i,f,fields,err)
+		}
+		out[i] = v
+	}
+	return out
 }
