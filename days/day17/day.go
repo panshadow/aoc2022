@@ -77,9 +77,7 @@ func (tc *TallChamber) Put(r *Rock) int {
 		tc.Rocks = append(tc.Rocks, add...)
 	}
 	for _, p := range r.Rocks {
-		Debugln("Put ", p.R, p.C, tc.Rocks[p.R])
 		tc.Rocks[p.R] |= 1 << p.C
-		Debugf("New %04X\n", tc.Rocks[p.R])
 	}
 	return maxH
 }
@@ -106,6 +104,7 @@ func NewTallChamber(width int, jetPattern string, shapes []Rock) *TallChamber {
 	return tc
 }
 
+
 func (tc *TallChamber) Show() {
 	r0 := 0
 	Debugln("After ", tc.Counter, "Rocks, Height is ", tc.Height)
@@ -129,20 +128,25 @@ func (tc *TallChamber) Show() {
 	Debugln("----------")
 }
 
-func DetectCycles(xs []uint) {
+func DetectCycles(xs []int) int {
 	i0 := len(xs) - 1
-	for i := len(xs) - 2; i >= 0; i-- {
-		if xs[i] == xs[i0] {
-			j := 0
-			for ; xs[i-j] == xs[i0-j] && j < i0-i; j++ {
-
+	for i := i0-1; i >= 0; i-- {
+		d := i0 - i
+		if xs[i] == xs[i0] && d > 3 && i >= 2*d-1  {
+			if EqSlice(xs[i0-d+1:i0+1],xs[i-d+1:i+1]) {
+				Debugf("Found repeat in len %d [%d:%d] & [%d:%d]\n", d, i0, i0-d, i, i-d)
+				if EqSlice(xs[i0-d+1:i0+1],xs[i-d-d+1:i-d+1]) {
+					Debugf("Repeat confirmed\n")
+					return d
+				}
 			}
-			fmt.Printf("Found repeat in len %d [%d:%d] & [%d:%d]\n", j, i0, i0-j, i, i-j)
 		}
 	}
+
+	return 0
 }
 
-func (tc *TallChamber) RockRound() {
+func (tc *TallChamber) RockRound() int {
 	r := NewRock(tc.Shapes[tc.ShapeCur].Rocks, Point{tc.Height + 3, 2})
 	stopped := false
 	for !stopped {
@@ -163,15 +167,18 @@ func (tc *TallChamber) RockRound() {
 		tc.JPCur = (tc.JPCur + 1) % len(tc.JetPattern)
 	}
 	maxR := tc.Put(r)
+	var dH int
 	if maxR > tc.Height {
+		dH = maxR - tc.Height
 		tc.Height = maxR
 	}
 	if tc.JPCur == 0 {
-		fmt.Println("Counter is ",tc.Counter)
-		DetectCycles(tc.Rocks)
+		Debugln("Counter is ",tc.Counter)
 	}
 	tc.Counter++
 	tc.ShapeCur = (tc.ShapeCur + 1) % len(tc.Shapes)
+	Debugf("%10d: JPCur=%d ShapeCur=%d Height=%d  +%d\n",tc.Counter, tc.JPCur, tc.ShapeCur, tc.Height, dH)
+	return dH
 }
 
 func Task01(input []string) string {
@@ -190,6 +197,7 @@ func Task01(input []string) string {
 }
 
 func Task02(input []string) string {
+	NUM_ROUNDS := 1000000000000
 	tc := NewTallChamber(7, input[0], []Rock{
 		ShapeHor,
 		ShapeCross,
@@ -198,8 +206,31 @@ func Task02(input []string) string {
 		ShapeSquare,
 	})
 	// for i := 0; i < 1000000000000; i++ {
-	for i := 0; i < 1000000000000; i++ {
-		tc.RockRound()
+	dh := make([]int, 0, 1024*1024*1024)
+
+	for i := 0; i < NUM_ROUNDS; i++ {
+		dh = append(dh, tc.RockRound())
+		if len(dh) > 10 {
+			dc := DetectCycles(dh)
+			if dc > 0 {
+				dhSum := 0
+				cycle := dh[i-dc+1:i+1]
+				Debugln(dc, cycle[:3],"...",cycle[len(cycle)-3:])
+				for _,x := range cycle {
+					dhSum += x
+				}
+				fcNum := (NUM_ROUNDS-i)/dc
+				Debugln("dhSum=",dhSum, "fcNum=",fcNum, NUM_ROUNDS-i-fcNum*dc, i+fcNum*dc+1, (i+fcNum*dc+1)%dc, cycle[(i+fcNum*dc+1)%dc])
+				result := tc.Height+dhSum*fcNum
+				Debugln(i+fcNum*dc, result)
+				for ii:=i+fcNum*dc+1; ii<NUM_ROUNDS; ii++ {
+
+					result += cycle[(ii-i-1)%dc]
+				}
+				return fmt.Sprint(result)
+
+			}
+		}
 	}
 	return fmt.Sprint(tc.Height)
 }
